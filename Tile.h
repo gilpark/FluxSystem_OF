@@ -21,7 +21,7 @@ public:
  
     int id;
     int size;
-    int dist;
+    float dist;
     float dist2color;
     bool isGoal; //distance from the goal
     bool cDebug;
