@@ -50,55 +50,14 @@ void PotentialField::update(){
         testID = test_cell;
         calculateField(testID);
 
-    //when input is positive
-        
-       
-    
-    //when input is negative
-
     }
-    //if(testID!=-1)
     
 }
-//void PotentialField::findNeighbors(int _x, int _y){
-//    int column = int(ofClamp(_x,0,cols-1));
-//    int row = int(ofClamp(_y,0,rows-1));
-//    //cout <<"x : "<<column<<" y :"<<row<<"\n";
-//    int testingID = row * rows + column;
-//    int N,E,S,W;
-//    N = (row-1) * rows + column;
-//    if(cells[N]->isPassible){
-//        cells[N]->dist = cells[testingID]->dist-1;
-//        //cells[N]->isPassible = false;
-//        testList.push_back(N);
-//    }
-//    E = row * rows + column+1;
-//    if(cells[E]->isPassible){
-//        cells[E]->dist = cells[testingID]->dist-1;
-//        //cells[N]->isPassible = false;
-//        testList.push_back(E);
-//    }
-//    S = (row+1) * rows + column;
-//    if(cells[S]->isPassible){
-//        cells[S]->dist = cells[testingID]->dist-1;
-//        //cells[N]->isPassible = false;
-//        testList.push_back(S);
-//    }
-//    W = row * rows + column-1;
-//    if(cells[W]->isPassible){
-//        cells[W]->dist = cells[testingID]->dist-1;
-//        //cells[N]->isPassible = false;
-//        testList.push_back(W);
-//    }
-//    //cout<< " N : "<<N<< " E : "<<E<< " S : "<<S<< " W : "<<W<<"\n";
-//    //cout<<"test id : "<<testID<<"'s val :"<<cells[testID]->dist<<" and passible : "<<cells[testID]->isPassible<<"\n";
-//   
-//}
 void PotentialField::findNeighbors(int _x, int _y){
     int column = int(ofClamp(_x,0,cols-1));
     int row = int(ofClamp(_y,0,rows-1));
     int testingID = row * cols + column;
-    cout <<"testingID : "<<testingID<<" x : "<<column<<" y :"<<row<<"\n";
+    //cout <<"testingID : "<<testingID<<" x : "<<column<<" y :"<<row<<"\n";
 
     int N,E,S,W;
     N = (row-1) * cols + column;
@@ -138,14 +97,16 @@ void PotentialField::findNeighbors(int _x, int _y){
     
 }
 void PotentialField::calculateField(int _id){
-    
+    list<int> visitedList;
     if(cells[_id]->isPassible){ 
         testList.push_back(_id);
-        //cells[targetID]->isPassible = false;
         //cout<<"testlist size : "<<testList.size()<<"\n";
         
         while(testList.size()){
             int targetN = testList.front();
+            visitedList.push_back(targetN); //add to visited list
+            visitedList.unique();
+
             testList.pop_front(); //delete target one
             int CurrentX = targetN%cols;
             int CurrentY = targetN/cols;
@@ -154,12 +115,41 @@ void PotentialField::calculateField(int _id){
             if(cells[targetN]->isPassible){
                 cells[targetN]->isPassible = false;
                 if(CurrentY<=0||CurrentX<=0||CurrentY>=rows-1||CurrentX>=cols-1)continue;
-                if(cells[targetN]->dist != 0)
-                findNeighbors(CurrentX, CurrentY);
+                if(cells[targetN]->dist != 0){
+                    findNeighbors(CurrentX, CurrentY);
+                }
+
             }
         }
     }
-    
+//    //std::list<int>::iterator findIter = std::find(visitedList.begin(), visitedList.end(), 1);
+//    if(!cells[_id]->isPassible){
+//        testList.push_back(_id);
+//        //cout<<"testlist size : "<<testList.size()<<"\n";
+//        
+//        while(testList.size()){
+//            int targetN = testList.front();
+//            visitedList.push_back(targetN); //add to visited list
+//            visitedList.unique();
+//            testList.pop_front(); //delete target one
+//            int CurrentX = targetN%cols;
+//            int CurrentY = targetN/cols;
+//            //cout << "X : "<<CurrentX<<" Y :"<<CurrentY<<"\n";
+//            
+//            if(cells[targetN]->isPassible){
+//                cells[targetN]->isPassible = false;
+//                if(CurrentY<=0||CurrentX<=0||CurrentY>=rows-1||CurrentX>=cols-1)continue;
+//                if(cells[targetN]->dist != 0){
+//                    findNeighbors(CurrentX, CurrentY);
+//                }
+//                
+//            }
+//        }
+//        //cout <<"v list size : "<<visitedList.size()<<"\n";
+//    }
+    cout <<"v list size : "<<visitedList.size()<<"\n";
+
+    visitedList.clear();
 }
 
 //void PotentialField::calculateField(int _id){

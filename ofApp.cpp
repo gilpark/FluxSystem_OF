@@ -8,7 +8,7 @@ void ofApp::setup(){
     ofBackground(0);
     
 
-    flux = FluxSystem(40,width,height);
+    flux = FluxSystem(100,width,height);
     flux.setup();
     //cout<< "flux.res :  " <<flux.resolution <<"\n";
     mPressed = false;
