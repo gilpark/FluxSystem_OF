@@ -23,10 +23,11 @@ public:
     void update();
     void draw();
     void test_input(int i);
-
+    void  mReleased();
     int resolution;
     int width,height;
     PotentialField pField;
+    
 };
 
 #endif /* defined(__EmoFlux__FluxSystem__) */

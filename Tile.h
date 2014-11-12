@@ -17,16 +17,15 @@ public:
     Tile(int res);
     ~Tile();
     void draw(float x, float y);
-    void test_input(int _x, int _y);
- 
+    void reset();
     int id;
     int size;
-    float dist;
-    float dist2color;
+    float cost;
+    float cost2color;
     bool isGoal; //distance from the goal
     bool cDebug;
     bool isPassible;
-    bool visited;
+    bool Reset;
     float x,y;
     //float mouseX,mouseY;
 };

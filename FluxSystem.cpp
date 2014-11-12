@@ -9,13 +9,14 @@
 #include "FluxSystem.h"
 
 FluxSystem::FluxSystem(){
-
+    
 }
 
 FluxSystem::FluxSystem(int res, int w, int h){
     resolution = res;
     width = w;
     height = h;
+    
     //cout << "Fluxsystme- resolution : "<< resolution << "\n";
 }
 
@@ -31,4 +32,7 @@ void FluxSystem::update(){
 }
 void FluxSystem::draw(){
     pField.draw();
+}
+void FluxSystem::mReleased(){
+    pField.mReleased();
 }

@@ -7,11 +7,10 @@
 //
 
 #include "PotentialField.h"
-std::list<int>::iterator findIter;
-list<int> visitedList;
+int column;
+int row;
 
 PotentialField::PotentialField(){
-//    pDebug = false;
 }
 PotentialField::PotentialField(int res, int w, int h){
     resolution = res;
@@ -19,7 +18,7 @@ PotentialField::PotentialField(int res, int w, int h){
     height = h;
     testID =-1;
     pDebug = false;
-    cout <<"cells size : "<<cells.size()<<"\n";
+    //cout <<"cells size : "<<cells.size()<<"\n";
 }
 PotentialField::~PotentialField(){}
 
@@ -28,38 +27,42 @@ void PotentialField::setup(){
     cols = width/resolution;
     rows = height/resolution;
     int numCells = cols * rows;
+    //cells.resize(numCells);
     
     for(int i=0; i < numCells; i++){
-        shared_ptr<Tile> pCell(new Tile());
-        pCell->size = resolution;
-        pCell->id = i;
-//cout<<i<<"\n";
-        cells.push_back(pCell);
+        shared_ptr<Tile> tempCell(new Tile());
+        shared_ptr<Tile> Cell(new Tile());
+        tempCell->size = resolution;
+        tempCell->id = i;
+        temp_cells.push_back(tempCell);
+        cells.push_back(Cell);
+
+        cells[i]->id = temp_cells[i]->id;
     }
+    cout<<"cell size : "<<cells.size()<<" temp_cell_size : "<<temp_cells.size()<<"\n";
+    //cout<<"what's in the temp cell? : " <<temp_cells[400]<<"\n";
+    //cout<<"what's in the cell? : " <<cells[0]<<"\n";
+    
+
 }
 void PotentialField::update(){
-
-    //testing input field
-    int column = int(ofClamp(ofGetMouseX()/resolution,0,cols-1));
-    int row = int(ofClamp(ofGetMouseY()/resolution,0,rows-1));
+}
+void PotentialField::mReleased(){
+    
+    column = int(ofClamp(ofGetMouseX()/resolution,0,cols-1));
+    row = int(ofClamp(ofGetMouseY()/resolution,0,rows-1));
     int test_cell =  row * cols +column;
-    //cout<< "C : " << column<<" row : "<<row<<" ID : "<<test_cell<<"\n";
+    
+    int ran = ofRandom(1,5);
+    temp_cells[test_cell]->cost=10; //add val into cell
+    temp_cells[test_cell]->isGoal = true;
+    testID = test_cell;
+    
+    calculateField(testID);
 
-    if(ofGetMousePressed()){
-        int ran = ofRandom(1,5);
-        cells[test_cell]->dist=10; //add val into cell
-        cells[test_cell]->isGoal = true;
-        testID = test_cell;
-        //visitedList.clear();
-        if(cells[testID]->isPassible){
-            calculateField(testID);
-        }
-        if(!cells[testID]->isPassible){
-            //visit_calculateField(testID);
-        }
-    }
     
 }
+
 void PotentialField::findNeighbors(int _x, int _y){
     int column = int(ofClamp(_x,0,cols-1));
     int row = int(ofClamp(_y,0,rows-1));
@@ -71,132 +74,63 @@ void PotentialField::findNeighbors(int _x, int _y){
     E = row * cols + column+1;
     S = (row+1) * cols + column;
     W = row * cols + column-1;
-
-
-    if(cells[N]->isPassible){
-        if(cells[testingID]->dist>0) //when the input val is positive
-        cells[N]->dist = cells[testingID]->dist-1;
-        if(cells[testingID]->dist<0) //when the input val is negative
-            cells[N]->dist = cells[testingID]->dist+1;
+    
+    
+    if(temp_cells[N]->isPassible){
+        if(temp_cells[testingID]->cost>0) //when the input val is positive
+            temp_cells[N]->cost = temp_cells[testingID]->cost-1;
+        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[N]->cost = temp_cells[testingID]->cost+1;
         testList.push_back(N);
-        visitedList.push_back(N);
-
     }
-
     
-    if(cells[E]->isPassible){
-        if(cells[testingID]->dist>0)
-            cells[E]->dist = cells[testingID]->dist-1;
-        if(cells[testingID]->dist<0)
-                cells[E]->dist = cells[testingID]->dist+1;
+    if(temp_cells[E]->isPassible){
+        if(temp_cells[testingID]->cost>0) //when the input val is positive
+            temp_cells[E]->cost = temp_cells[testingID]->cost-1;
+        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[E]->cost = temp_cells[testingID]->cost+1;
         testList.push_back(E);
-        visitedList.push_back(E);
-
     }
-
-    if(cells[S]->isPassible){
-        if(cells[testingID]->dist>0)
-        cells[S]->dist = cells[testingID]->dist-1;
-        if(cells[testingID]->dist<0)
-            cells[S]->dist = cells[testingID]->dist+1;
+    
+    if(temp_cells[S]->isPassible){
+        if(temp_cells[testingID]->cost>0) //when the input val is positive
+            temp_cells[S]->cost = temp_cells[testingID]->cost-1;
+        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[S]->cost = temp_cells[testingID]->cost+1;
         testList.push_back(S);
-        visitedList.push_back(S);
-
     }
-
     
-    if(cells[W]->isPassible){
-        if(cells[testingID]->dist>0)
-        cells[W]->dist = cells[testingID]->dist-1;
-        if(cells[testingID]->dist<0)
-            cells[W]->dist = cells[testingID]->dist+1;
+    
+    if(temp_cells[W]->isPassible){
+        if(temp_cells[testingID]->cost>0) //when the input val is positive
+            temp_cells[W]->cost = temp_cells[testingID]->cost-1;
+        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[W]->cost = temp_cells[testingID]->cost+1;
         testList.push_back(W);
-        visitedList.push_back(W);
-
     }
-
-//    cout<< " N : "<<N<< " E : "<<E<< " S : "<<S<< " W : "<<W<<"\n";
-//    cout<<"test id : "<<testID<<"'s val :"<<cells[testID]->dist<<" and passible : "<<cells[testID]->isPassible<<"\n";
     
 }
-
-void PotentialField::find_visited_Neighbors(int _x, int _y){
-    int column = int(ofClamp(_x,0,cols-1));
-    int row = int(ofClamp(_y,0,rows-1));
-    int testingID = row * cols + column;
-    //cout <<"testingID : "<<testingID<<" x : "<<column<<" y :"<<row<<"\n";
-    
-    int N,E,S,W;
-    N = (row-1) * cols + column;
-    E = row * cols + column+1;
-    S = (row+1) * cols + column;
-    W = row * cols + column-1;
-
-    if(!cells[N]->isPassible){
-        cells[N]->dist = int((cells[testingID]->dist + cells[N]->dist)/2);
-        //cout<<"working?  : "<<cells[N]->dist <<"\n";
-        //visitedList.push_back(N);
-    }
-    
-
-    if(!cells[E]->isPassible){
-        cells[E]->dist = int((cells[testingID]->dist+cells[E]->dist)/2);
-        //visitedList.push_back(E);
-    }
-
-    if(!cells[S]->isPassible){
-        cells[S]->dist = int((cells[testingID]->dist+cells[S]->dist)/2);
-        //visitedList.push_back(S);
-    }
-    
-
-    if(!cells[W]->isPassible){
-        cells[W]->dist = int((cells[testingID]->dist+cells[W]->dist)/2);
-        //visitedList.push_back(W);
-    }
-    visitedList.pop_front();
-
-    //    cout<< " N : "<<N<< " E : "<<E<< " S : "<<S<< " W : "<<W<<"\n";
-    //    cout<<"test id : "<<testID<<"'s val :"<<cells[testID]->dist<<" and passible : "<<cells[testID]->isPassible<<"\n";
-    
-}
-
-
 void PotentialField::calculateField(int _id){
-   
-        testList.push_back(_id);
-        visitedList.push_back(_id);
-
-        while(testList.size()){
-            testList.unique();
-            int targetN = testList.front();
-            testList.pop_front(); //delete target one
-            int CurrentX = targetN%cols;
-            int CurrentY = targetN/cols;
-            //cout << "X : "<<CurrentX<<" Y :"<<CurrentY<<"\n";
-           
-            if(cells[targetN]->isPassible){
-                cells[targetN]->isPassible = false;
-                if(CurrentY<=0||CurrentX<=0||CurrentY>=rows-1||CurrentX>=cols-1)continue;
-                if(cells[targetN]->dist != 0){
-                    findNeighbors(CurrentX, CurrentY);
-                }
-
+    
+    testList.push_back(_id);
+    
+    while(testList.size()){
+        testList.unique();
+        int targetN = testList.front();
+        testList.pop_front(); //delete target one
+        int CurrentX = targetN%cols;
+        int CurrentY = targetN/cols;
+        //cout << "X : "<<CurrentX<<" Y :"<<CurrentY<<"\n";
+        if(temp_cells[targetN]->isPassible){
+            temp_cells[targetN]->isPassible = false;
+            if(CurrentY<=0||CurrentX<=0||CurrentY>=rows-1||CurrentX>=cols-1)continue;
+            if(temp_cells[targetN]->cost != 0){
+                findNeighbors(CurrentX, CurrentY);
             }
-            visitedList.unique();
-            cout<<visitedList.size()<<"<===== visize"<<"\n";
-            for(int i=0;i<visitedList.size();i++){
-                if(!cells[visitedList.front()]->isPassible){
-                    if(CurrentY<=0||CurrentX<=0||CurrentY>=rows-1||CurrentX>=cols-1)continue;
-                    if(cells[targetN]->dist != 0){
-                        find_visited_Neighbors(CurrentX, CurrentY);
-                    }
-                    
-                }
-
-            }
+            
         }
-
+    }
+    
 }
 
 void PotentialField::draw(){

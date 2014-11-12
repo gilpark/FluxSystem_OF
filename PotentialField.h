@@ -14,7 +14,7 @@
 #include "Tile.h"
 
 class PotentialField{
-
+    
 public:
     PotentialField();
     PotentialField(int res, int w, int h);
@@ -24,24 +24,22 @@ public:
     void update();
     void draw();
     void calculateField(int _id);
-    void visit_calculateField(int _id);
-
     void findNeighbors(int _x,int _y);
-    void find_visited_Neighbors(int _x,int _y);
-
+    void mReleased();
+    
     bool pDebug;
     int cols,
-        rows,
-        resolution,
-        width,
-        height,
-        testID;
+    rows,
+    resolution,
+    width,
+    height,
+    testID;
     
     vector<shared_ptr<Tile> > cells;
-    list<int> Neihbors;
+    vector<shared_ptr<Tile> > temp_cells;
     list<int> testList;
-
+    
     //vector<shared_ptr<Tile> > testNeighbours;
- 
+    
 };
 #endif /* defined(__EmoFlux__PotentialField__) */
