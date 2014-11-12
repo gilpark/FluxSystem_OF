@@ -26,6 +26,7 @@ public:
     bool isGoal; //distance from the goal
     bool cDebug;
     bool isPassible;
+    bool visited;
     float x,y;
     //float mouseX,mouseY;
 };

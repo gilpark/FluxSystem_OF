@@ -24,7 +24,11 @@ public:
     void update();
     void draw();
     void calculateField(int _id);
+    void visit_calculateField(int _id);
+
     void findNeighbors(int _x,int _y);
+    void find_visited_Neighbors(int _x,int _y);
+
     bool pDebug;
     int cols,
         rows,
