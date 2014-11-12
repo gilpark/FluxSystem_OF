@@ -26,6 +26,7 @@ public:
     void calculateField(int _id);
     void findNeighbors(int _x,int _y);
     void mReleased();
+    void calculateVecs(int _id);
     
     bool pDebug;
     int cols,
@@ -34,12 +35,11 @@ public:
     width,
     height,
     testID;
-    
+    int column;
+    int row;
     vector<shared_ptr<Tile> > cells;
     vector<shared_ptr<Tile> > temp_cells;
     list<int> testList;
-    
-    //vector<shared_ptr<Tile> > testNeighbours;
     
 };
 #endif /* defined(__EmoFlux__PotentialField__) */

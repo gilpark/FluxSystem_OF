@@ -17,7 +17,9 @@ public:
     Tile(int res);
     ~Tile();
     void draw(float x, float y);
-    void reset();
+    void reset_val();
+    
+    
     int id;
     int size;
     float cost;
@@ -27,6 +29,7 @@ public:
     bool isPassible;
     bool Reset;
     float x,y;
+    ofVec2f direction;
     //float mouseX,mouseY;
 };
 #endif /* defined(__EmoFlux__Tile__) */
