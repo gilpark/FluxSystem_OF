@@ -68,32 +68,75 @@ void PotentialField::mReleased(){
             cells[i]->cost =(cells[i]->cost+ temp_cells[i]->cost*0.5)*0.5;
 
         }
+
         temp_cells[i]->reset_val();
-        calculateVecs(i);
     }
+    for(int i=0; i<cells.size(); i++)calculateVecs(i);
+
 
 }
+//void PotentialField::calculateVecs(int _id){
+//    
+//    int _x = _id%cols;
+//    int _y = _id/cols;
+//    //[_y-_x/2,-_x-_y/2]
+//    cells[_id]->direction.set(_y-_x*_x,-_x-_y/2);
+//    cout<<"id : "<<_id<<" x : "<<cells[_id]->direction.x<<", y :"<<cells[_id]->direction.y<<"\n";
+//   }
 void PotentialField::calculateVecs(int _id){
     
     int _x = _id%cols;
     int _y = _id/cols;
     int _column = int(ofClamp(_x,0,cols-1));
     int _row = int(ofClamp(_y,0,rows-1));
-    //int testingID = row * cols + column;
-    
+//    int _column = _x;
+//    int _row = _y;
+  
     int N,E,S,W;
     N = (_row-1) * cols + _column;
-    E = _row * cols + _column+1;
     S = (_row+1) * cols + _column;
+
+
+    E = _row * cols + _column+1;
+
     W = _row * cols + _column-1;
-    
-    int vecX,vecY;
-    if(W>0 && E<rows-1)
-    vecX = cells[E]->cost - cells[W]->cost;
-    if(N>0&&S<cols-1)
-    vecY = cells[S]->cost - cells[N]->cost;
+    if(_y==0)
+       cout<< "id :" <<_id <<"\n";
+
+    float vecX,vecY;
+    if(_x<=0){
+        vecX = cells[E]->cost - 0;
+        //cout<<"id " << _id<<" : vec-E :" << cells[E]->cost <<"\n";
+
+    }
+    if(_x>=cols-1){
+        vecX = 0 - cells[W]->cost;
+        //cout<<"id " << _id<<" : vec-E :" << cells[W]->cost <<"\n";
+
+    }
+    if(_y <= 0){
+        vecY = cells[S]->cost - 0;
+        //cout<<"id " << _id<<" : vec-S :" << cells[S]->cost <<"\n";
+
+    }
+    if(_y >= rows-1){
+        vecY = 0 - cells[N]->cost;
+
+        //cout<<"id " << _id<<" : vec-N :" << cells[N]->cost <<"\n";
+    }
+    if(_x>0&&_x<cols-1){
+
+        vecX = cells[E]->cost - cells[W]->cost;
+
+    }
+    if(_y>0&&_y<rows-1){
+        
+        vecY = cells[S]->cost - cells[N]->cost;
+        
+    }
 
     cells[_id]->direction.set(vecX,vecY);
+    //cout<< _id<<" 's vec ( "<<vecX<<","<<vecY<<" )\n";
 }
 
 void PotentialField::findNeighbors(int _x, int _y){
@@ -166,6 +209,30 @@ void PotentialField::calculateField(int _id){
     
 }
 
+void PotentialField::drawVectors(){
+    
+    for(int x=0; x < cols; x++){
+        for(int y=0; y < rows; y++){
+            int id = y * cols +x;
+            float nX,nY;
+            nX = x*resolution+resolution*0.5;
+            nY = y*resolution+resolution*0.5;
+            //ofLine(nX, nY, nX+10, nY+10);
+            ofPushMatrix();
+            ofTranslate(nX, nY);
+            ofSetColor(255,0,255);
+
+            ofRect(0,0,2,2);
+            ofSetColor(255);
+
+            ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
+            ofPopMatrix();
+        }
+    }
+    //cout<< cells[3]->direction.x <<":::::2-x\n";
+
+}
+
 void PotentialField::draw(){
     
     for(int x=0; x < cols; x++){
@@ -174,5 +241,7 @@ void PotentialField::draw(){
             cells[id]->draw(x*resolution,y*resolution);
         }
     }
+    drawVectors();
+    
 }
 

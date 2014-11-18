@@ -22,7 +22,7 @@ public:
     
     int id;
     int size;
-    float cost;
+    int cost;
     float cost2color;
     bool isGoal; //distance from the goal
     bool cDebug;

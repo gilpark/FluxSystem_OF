@@ -27,6 +27,7 @@ public:
     void findNeighbors(int _x,int _y);
     void mReleased();
     void calculateVecs(int _id);
+    void drawVectors();
     
     bool pDebug;
     int cols,

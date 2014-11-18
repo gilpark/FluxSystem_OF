@@ -37,8 +37,11 @@ void Tile::draw(float _x, float _y){
     y = _y;
     if(isGoal){
         ofSetColor(255, 0,255, cost2color);
-    }
-    else{
+    }else if(cost == 0){
+        //ofSetColor(255, 0, 255);
+        ofSetColor(0,0,200,cost2color);
+
+    }else{
         ofSetColor(0,0,200,cost2color);
     }
     ofFill();
@@ -48,10 +51,10 @@ void Tile::draw(float _x, float _y){
 //        ofRect(x+size/2,y+size/2,3,3);}
     
     
-    ofSetColor(255);
-    //ofDrawBitmapString(ofToString(id)+":", x+3,y+10); //id
-    ofSetColor(255,50);
-    ofDrawBitmapString(ofToString(cost), x+20,y+10); //id
+//    ofSetColor(255);
+//    ofDrawBitmapString(ofToString(id)+":", x+3,y+10); //id
+//    ofSetColor(255,50);
+//    ofDrawBitmapString(ofToString(cost), x+20,y+10); //id
 
 }
 
