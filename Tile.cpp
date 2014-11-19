@@ -7,7 +7,6 @@
 //
 
 #include "Tile.h"
-//#include "ofBaseApp.h"
 Tile::Tile(){
     id =0;
     cost = 0;
@@ -16,11 +15,29 @@ Tile::Tile(){
     cDebug = false;
     isPassible = true;
     Reset = false;
+
 }
-Tile::Tile(int res){
+Tile::Tile(int _x,int _y){
+    x = _x;
+    y = _y;
+    id =0;
+    cost = 0;
+    cost2color = ofMap(cost,-10,10,0,255);
+    isGoal = false;
+    cDebug = false;
+    isPassible = true;
+    Reset = false;
 }
 
 Tile::~Tile(){}
+
+void Tile::update(){
+    if(cost<0 && particles.size()<5){
+            shared_ptr<Particle> particle(new Particle(x+ofRandom(size/2),y+ofRandom(size/2),3,0.01));
+            particles.push_back(particle);
+    }
+
+}
 
 void Tile::reset_val(){
     cost = 0;
@@ -46,15 +63,10 @@ void Tile::draw(float _x, float _y){
     }
     ofFill();
     ofRect(x,y,size,size);
-//    if(isPassible){
-//        ofSetColor(255,255,0);
-//        ofRect(x+size/2,y+size/2,3,3);}
-    
     
 //    ofSetColor(255);
 //    ofDrawBitmapString(ofToString(id)+":", x+3,y+10); //id
 //    ofSetColor(255,50);
 //    ofDrawBitmapString(ofToString(cost), x+20,y+10); //id
-
-}
+ }
 

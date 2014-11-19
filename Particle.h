@@ -14,6 +14,7 @@
 
 #endif /* defined(__EmoFlux__Particle__) */
 class Particle{
+public:
     Particle(float x, float y, float ms, float mf);
     Particle();
     ~Particle();

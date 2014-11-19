@@ -11,17 +11,20 @@
 
 #include <stdio.h>
 #include "ofMain.h"
+#include "Particle.h"
+
 class Tile{
 public:
     Tile();
-    Tile(int res);
+    Tile(int _x, int _y);
     ~Tile();
     void draw(float x, float y);
     void reset_val();
-    
+    void update();
     
     int id;
     int size;
+    int p_counter;
     float cost;
     float cost2color;
     bool isGoal; //distance from the goal
@@ -30,6 +33,7 @@ public:
     bool Reset;
     float x,y;
     ofVec2f direction;
-    //float mouseX,mouseY;
+    
+    vector<shared_ptr<Particle> > particles;
 };
 #endif /* defined(__EmoFlux__Tile__) */

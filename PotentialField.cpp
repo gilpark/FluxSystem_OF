@@ -27,23 +27,53 @@ void PotentialField::setup(){
     rows = height/resolution;
     int numCells = cols * rows;
     
-    for(int i=0; i < numCells; i++){
-        shared_ptr<Tile> tempCell(new Tile());
-        shared_ptr<Tile> Cell(new Tile());
-        tempCell->size = resolution;
-        tempCell->id = i;
-        temp_cells.push_back(tempCell);
-        
-        Cell->size = resolution;
-        Cell->id = i;
-        Cell->direction = ofVec2f(0,0);
-        cells.push_back(Cell);
+    //    for(int i=0; i < numCells; i++){
+    //        shared_ptr<Tile> tempCell(new Tile());
+    //        shared_ptr<Tile> Cell(new Tile());
+    //        tempCell->size = resolution;
+    //        tempCell->id = i;
+    //        temp_cells.push_back(tempCell);
+    //
+    //        Cell->size = resolution;
+    //        Cell->id = i;
+    //        Cell->direction = ofVec2f(0,0);
+    //        cells.push_back(Cell);
+    //    }
+    
+    for(int x=0; x < cols; x++){
+        for(int y=0; y < rows; y++){
+            int id = y * cols +x;
+            shared_ptr<Tile> tempCell(new Tile(x,y));
+            shared_ptr<Tile> Cell(new Tile(x,y));
+            tempCell->size = resolution;
+            tempCell->id = id;
+            temp_cells.push_back(tempCell);
+            
+            Cell->size = resolution;
+            Cell->id = id;
+            Cell->direction = ofVec2f(0,0);
+            cells.push_back(Cell);
+        }
     }
     
     cout<<"cell size : "<<cells.size()<<" temp_cell_size : "<<temp_cells.size()<<"\n";
     
 }
 void PotentialField::update(){
+    
+    for(int j=0; j<cells.size(); j++){
+        cells[j]->update();
+        for(int i=0; i < cells[j]->particles.size(); i++){
+            
+            cells[j]->particles[i]->run();
+            
+            float X = int(ofClamp(cells[j]->particles[i]->location.x/resolution,0,cols-1));
+            float Y = int(ofClamp(cells[j]->particles[i]->location.y/resolution,0,rows-1));
+            int lookup = Y * cols + X;
+            ofVec2f Current_loc = cells[lookup]->direction;
+            cells[j]->particles[i]->follow(Current_loc);
+        }
+    }
 }
 void PotentialField::mReleased(){
     
@@ -62,9 +92,9 @@ void PotentialField::mReleased(){
     for(int i=0; i < cells.size(); i++){
         if(cells[i]->cost==0 && !temp_cells[i]->isPassible) //
             cells[i]->cost = temp_cells[i]->cost;
-            cells[i]->isPassible = temp_cells[i]->isPassible;
+        cells[i]->isPassible = temp_cells[i]->isPassible;
         cells[i]->isGoal = temp_cells[i]->isGoal;///
-
+        
         
         if(cells[i]->cost!=0&&!cells[i]->isPassible&&!temp_cells[i]->isPassible){
             cells[i]->cost =(cells[i]->cost+ temp_cells[i]->cost)*0.5;
@@ -191,11 +221,11 @@ void PotentialField::drawVectors(){
             ofPushMatrix();
             ofTranslate(nX, nY);
             ofSetColor(255,0,255);
-            
+            if(cells[id]->cost==0)
             ofRect(0,0,2,2);
             ofSetColor(255);
             
-            ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
+            //ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
             ofPopMatrix();
         }
     }
@@ -211,6 +241,13 @@ void PotentialField::draw(){
         }
     }
     drawVectors();
+    
+    for(int j=0; j<cells.size(); j++){
+        for(int i=0; i < cells[j]->particles.size(); i++){
+            
+            cells[j]->particles[i]->draw();
+        }
+    }
     
 }
 
