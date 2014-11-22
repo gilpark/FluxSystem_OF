@@ -31,7 +31,9 @@ void FluxSystem::update(){
     pField.update();
 }
 void FluxSystem::draw(){
+
     pField.draw();
+
 }
 void FluxSystem::mReleased(){
     pField.mReleased();

@@ -26,19 +26,7 @@ void PotentialField::setup(){
     cols = width/resolution;
     rows = height/resolution;
     int numCells = cols * rows;
-    
-    //    for(int i=0; i < numCells; i++){
-    //        shared_ptr<Tile> tempCell(new Tile());
-    //        shared_ptr<Tile> Cell(new Tile());
-    //        tempCell->size = resolution;
-    //        tempCell->id = i;
-    //        temp_cells.push_back(tempCell);
-    //
-    //        Cell->size = resolution;
-    //        Cell->id = i;
-    //        Cell->direction = ofVec2f(0,0);
-    //        cells.push_back(Cell);
-    //    }
+
     
     for(int x=0; x < cols; x++){
         for(int y=0; y < rows; y++){
@@ -60,10 +48,13 @@ void PotentialField::setup(){
     
 }
 void PotentialField::update(){
+    //update particles
+
     
-    for(int j=0; j<cells.size(); j++){
+    for(int j = cells.size()-1; j >= 0; j--){
+        if(cells[j]->particles.size()<20)
         cells[j]->update();
-        for(int i=0; i < cells[j]->particles.size(); i++){
+        for(int i= cells[j]->particles.size()-1; i>=0 ; i--){
             
             cells[j]->particles[i]->run();
             
@@ -72,8 +63,15 @@ void PotentialField::update(){
             int lookup = Y * cols + X;
             ofVec2f Current_loc = cells[lookup]->direction;
             cells[j]->particles[i]->follow(Current_loc);
+            
+            if(cells[j]->particles[i]->dead){
+                cells[j]->particles.erase(cells[j]->particles.begin()+i);
+                
+            }
         }
+        //calculateVecs(j);
     }
+    
 }
 void PotentialField::mReleased(){
     
@@ -94,11 +92,11 @@ void PotentialField::mReleased(){
             cells[i]->cost = temp_cells[i]->cost;
         cells[i]->isPassible = temp_cells[i]->isPassible;
         cells[i]->isGoal = temp_cells[i]->isGoal;///
-        
-        
+        cells[i]->direction = temp_cells[i]->direction;///
+  
         if(cells[i]->cost!=0&&!cells[i]->isPassible&&!temp_cells[i]->isPassible){
             cells[i]->cost =(cells[i]->cost+ temp_cells[i]->cost)*0.5;
-            
+           //TODO: VETOR SUM??
         }
         
         temp_cells[i]->reset_val();
@@ -107,14 +105,7 @@ void PotentialField::mReleased(){
     
     
 }
-//void PotentialField::calculateVecs(int _id){
-//
-//    int _x = _id%cols;
-//    int _y = _id/cols;
-//    //[_y-_x/2,-_x-_y/2]
-//    cells[_id]->direction.set(_y-_x*_x,-_x-_y/2);
-//    cout<<"id : "<<_id<<" x : "<<cells[_id]->direction.x<<", y :"<<cells[_id]->direction.y<<"\n";
-//   }
+
 void PotentialField::calculateVecs(int _id){
     
     int _x = _id%cols;
@@ -133,8 +124,13 @@ void PotentialField::calculateVecs(int _id){
     if(_x>=cols-1){vecX = 0 - cells[W]->cost;}
     if(_y <= 0){vecY = cells[S]->cost - 0;}
     if(_y >= rows-1){vecY = 0 - cells[N]->cost;}
-    if(_x>0&&_x<cols-1){vecX = cells[E]->cost - cells[W]->cost;}
-    if(_y>0&&_y<rows-1){vecY = cells[S]->cost - cells[N]->cost;}
+    if(_x>0&&_x<cols-1){
+        
+        vecX = cells[_id]->direction.x + (cells[E]->cost - cells[W]->cost);
+    }
+    if(_y>0&&_y<rows-1){
+        vecY = cells[_id]->direction.y + (cells[S]->cost - cells[N]->cost);
+    }
     
     cells[_id]->direction.set(vecX,vecY);
 }
@@ -143,7 +139,6 @@ void PotentialField::findNeighbors(int _x, int _y){
     int _column = int(ofClamp(_x,0,cols-1));
     int _row = int(ofClamp(_y,0,rows-1));
     int testingID = _row * cols + _column;
-    //cout <<"testingID : "<<testingID<<" x : "<<column<<" y :"<<row<<"\n";
     
     int N,E,S,W;
     N = (_row-1) * cols + _column;
@@ -153,35 +148,54 @@ void PotentialField::findNeighbors(int _x, int _y){
     
     
     if(temp_cells[N]->isPassible){
-        if(temp_cells[testingID]->cost>0) //when the input val is positive
+        if(temp_cells[testingID]->cost>0){ //when the input val is positive
             temp_cells[N]->cost = temp_cells[testingID]->cost-1;
-        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[N]->direction = ofVec2f(-1.5,0);
+
+        }
+        if(temp_cells[testingID]->cost<0){ //when the input val is negative
             temp_cells[N]->cost = temp_cells[testingID]->cost+1;
+            temp_cells[N]->direction = ofVec2f(1.5,0);
+        }
+       
         testList.push_back(N);
     }
     
     if(temp_cells[E]->isPassible){
-        if(temp_cells[testingID]->cost>0) //when the input val is positive
+        if(temp_cells[testingID]->cost>0){ //when the input val is positive
             temp_cells[E]->cost = temp_cells[testingID]->cost-1;
-        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[E]->direction = ofVec2f(0,-1.5);
+        }
+        if(temp_cells[testingID]->cost<0){ //when the input val is negative
             temp_cells[E]->cost = temp_cells[testingID]->cost+1;
+            temp_cells[E]->direction = ofVec2f(0,1.5);
+        }
+        temp_cells[E]->direction = ofVec2f(0,-1.5);
         testList.push_back(E);
     }
     
     if(temp_cells[S]->isPassible){
-        if(temp_cells[testingID]->cost>0) //when the input val is positive
+        if(temp_cells[testingID]->cost>0){ //when the input val is positive
             temp_cells[S]->cost = temp_cells[testingID]->cost-1;
-        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[S]->direction = ofVec2f(1.5,0);
+        }
+        if(temp_cells[testingID]->cost<0){ //when the input val is negative
             temp_cells[S]->cost = temp_cells[testingID]->cost+1;
+            temp_cells[S]->direction = ofVec2f(-1.5,0);
+        }
         testList.push_back(S);
     }
     
     
     if(temp_cells[W]->isPassible){
-        if(temp_cells[testingID]->cost>0) //when the input val is positive
+        if(temp_cells[testingID]->cost>0){ //when the input val is positive
             temp_cells[W]->cost = temp_cells[testingID]->cost-1;
-        if(temp_cells[testingID]->cost<0) //when the input val is negative
+            temp_cells[W]->direction = ofVec2f(0,1.5);
+        }
+        if(temp_cells[testingID]->cost<0){ //when the input val is negative
             temp_cells[W]->cost = temp_cells[testingID]->cost+1;
+            temp_cells[W]->direction = ofVec2f(0,-1.5);
+        }
         testList.push_back(W);
     }
     
@@ -191,7 +205,7 @@ void PotentialField::calculateField(int _id){
     testList.push_back(_id);
     
     while(testList.size()){
-        testList.unique();
+        testList.unique(); //get only unigue numbers
         int targetN = testList.front();
         testList.pop_front(); //delete target one
         int CurrentX = targetN%cols;
@@ -222,7 +236,7 @@ void PotentialField::drawVectors(){
             ofTranslate(nX, nY);
             ofSetColor(255,0,255);
             if(cells[id]->cost==0)
-            ofRect(0,0,2,2);
+                ofRect(0,0,2,2);
             ofSetColor(255);
             
             //ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
@@ -241,13 +255,16 @@ void PotentialField::draw(){
         }
     }
     drawVectors();
-    
+
     for(int j=0; j<cells.size(); j++){
         for(int i=0; i < cells[j]->particles.size(); i++){
             
             cells[j]->particles[i]->draw();
         }
     }
+    ofSetColor(0, 0, 0,100);
+    ofFill();
+    ofRect(0,0,width,height);
     
 }
 

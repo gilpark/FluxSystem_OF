@@ -6,10 +6,11 @@ void ofApp::setup(){
     width = ofGetWindowWidth();
     height = ofGetWindowHeight();
     ofBackground(0);
+
     
-    
-    flux = FluxSystem(10,width,height);
+    flux = FluxSystem(20,width,height);
     flux.setup();
+    
     //cout<< "flux.res :  " <<flux.resolution <<"\n";
 }
 

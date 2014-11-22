@@ -32,10 +32,10 @@ Tile::Tile(int _x,int _y){
 Tile::~Tile(){}
 
 void Tile::update(){
-    if(cost<0 && particles.size()<5){
-            shared_ptr<Particle> particle(new Particle(x+ofRandom(size/2),y+ofRandom(size/2),3,0.01));
+    //if(cost<-2){
+            shared_ptr<Particle> particle(new Particle(x+ofRandom(size/2),y+ofRandom(size/2),1.5,0.1));
             particles.push_back(particle);
-    }
+    //}
 
 }
 

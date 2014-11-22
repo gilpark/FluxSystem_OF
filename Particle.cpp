@@ -20,7 +20,7 @@ Particle::Particle(float x,float y, float ms, float mf) {
     maxforce = mf;
     acceleration = ofVec2f(0, 0);
     velocity = ofVec2f(0, 0);
-    age = (int)ofRandom(50,200); //1sec
+    age = 100;//(int)ofRandom(50,200); //1sec
     ran = ofColor(ofRandom(255),ofRandom(255),ofRandom(255));
 }
 Particle::~Particle(){}
@@ -35,38 +35,41 @@ void Particle::run() {
 void Particle::follow(ofVec2f flow) {
     // What is the vector at that spot in the flow field?
     ofVec2f desired = flow;
-    location = location+desired/10;
     // Scale it up by maxspeed
+
+    // Steering is desired minus velocity
+    ofVec2f steer = desired - velocity;
+    steer.limit(maxforce);  // Limit to maximum steering force
+    applyForce(steer);
     
-    //        desired.mult(maxspeed);
-    //        // Steering is desired minus velocity
-    //        PVector steer = PVector.sub(desired, velocity);
-    //        steer.limit(maxforce);  // Limit to maximum steering force
-    //        applyForce(steer);
+
+    if(desired==ofVec2f(0,0)){
+        dead =true;
+    }
 }
 
 void Particle::applyForce(ofVec2f force) {
     // We could add mass here if we want A = F / M
-    //acceleration.add(force);
+    acceleration = acceleration+force;
 }
 
 // Method to update location
 void Particle::update() {
     // Update velocity
-    //velocity.add(acceleration);
+    velocity = velocity+acceleration;
     // Limit speed
     velocity.limit(maxspeed);
-    //location.add(velocity);
+    location = location + velocity;
     // Reset accelertion to 0 each cycle
-    //acceleration.mult(0);
+    acceleration *= 0;
     
-    //        history.add(location.get());
-    //    if (history.size() > 500) {
-    //      history.remove(0);
-    //    }
-    //
     age--;
-    if(age < 0 ) dead = !dead;
+    //if(age < 0 ) dead = !dead;
+    if(velocity.length()<0.5&& age < 50){
+        dead =true;
+        //cout<<velocity.length()<< " <-velocity \n";
+
+    }
 }
 
 void Particle::draw() {
