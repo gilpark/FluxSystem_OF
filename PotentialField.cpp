@@ -239,7 +239,7 @@ void PotentialField::drawVectors(){
                 ofRect(0,0,2,2);
             ofSetColor(255);
             
-            //ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
+            ofLine(0, 0, cells[id]->direction.x*5, cells[id]->direction.y*5);
             ofPopMatrix();
         }
     }
@@ -259,7 +259,7 @@ void PotentialField::draw(){
     for(int j=0; j<cells.size(); j++){
         for(int i=0; i < cells[j]->particles.size(); i++){
             
-            cells[j]->particles[i]->draw();
+            //cells[j]->particles[i]->draw();
         }
     }
     ofSetColor(0, 0, 0,100);
